@@ -1,4 +1,4 @@
-FROM ruby:2.1-onbuild
+FROM ruby:2.4.1-onbuild
 
 ONBUILD RUN bundle install
 

@@ -48,13 +48,6 @@ post '/register' do
   else
     res = con.exec 'SELECT COUNT(username) FROM db.public.cameras where username=\'' + params[:uname].to_s + '\''
     @resp = res.values.to_s
-=begin
-    if Random.rand 2 == 1
-      @resp = 'Incorrect serial number.'
-    else
-      @resp = 'Username already in use.'
-    end
-=end
     erb :wrongReg
   end
 end
@@ -199,7 +192,7 @@ Please fill out the form below to create your account.
     <input name="conf-pwd" id="conf-pwd" type="password" required><br>
     <button type="submit">Register</button>
 </form>
-<h3><p style="color: red"><%= @resp %></p></h3>
+<h3><p style="color: red">Already <%= @resp %> users with that username.  Please pick a new one.</p></h3>
 </body>
 <script type="text/javascript">
     function validate() {
