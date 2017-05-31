@@ -1,10 +1,19 @@
 require 'sinatra'
 require 'pg'
 
-camSerial = 1234567890
+require_relative 'makeDB'
+
+sleep 5
+
+setup
+
+sleep 2
+
+camSerial = 2296354227
 
 con = PG::Connection.connect_start(:dbname => 'db',
                                    :user => 'default_user',
+                                   :host => 'db',
                                    :password => 'default_user')
 
 socket = con.socket_io
@@ -42,11 +51,11 @@ get '/register' do
 end
 
 post '/register' do
-  if params[:serial] == camSerial
+  if params[:serial].to_i == camSerial
     @username = params[:usr]
     erb :login
   else
-    res = con.exec 'SELECT COUNT(username) FROM db.public.cameras where username=\'' + params[:uname].to_s + '\''
+    res = con.exec 'SELECT COUNT(username) FROM cameras where username=\'' + params[:usr].to_s + '\''
     @resp = res.values.to_s
     erb :wrongReg
   end

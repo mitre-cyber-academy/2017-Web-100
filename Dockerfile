@@ -3,6 +3,7 @@ FROM ruby:2.4.1-onbuild
 ONBUILD RUN bundle install
 
 COPY Server.rb /usr/src/app
+COPY makeDB.rb /usr/src/app
 
 COPY public /usr/src/app
 
