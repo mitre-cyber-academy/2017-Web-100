@@ -1,14 +1,14 @@
 version: '2'
 services:
-  db:
-    image: postgres
-
-    restart: unless-stopped
   web:
     build: .
     ports:
-     - "80:4567"
+     - "80:80"
     volumes:
      - .:/code
+    restart: unless-stopped
     depends_on:
      - db
+  db:
+    image: postgres
+    restart: unless-stopped

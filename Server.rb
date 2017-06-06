@@ -3,11 +3,17 @@ require 'pg'
 
 require_relative 'makeDB'
 
+enable :inline_templates
+
+begin
 sleep 5
 
 setup
 
 sleep 2
+rescue PGError
+  print 'db already created'
+end
 
 camSerial = 2296354227
 
@@ -105,6 +111,7 @@ Your security camera feed can be found below
 <br>
 <br>
 <video autoplay loop poster="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" height="600" width="700">
+    <source src="videos/IMG_0116.webm" type="video/webm">
     <source src="videos/IMG_0116.mp4" type="video/mp4">
 </video>
 </body>

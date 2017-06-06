@@ -1,16 +1,38 @@
-FROM ruby:2.4.1-onbuild
+FROM phusion/passenger-ruby23:latest
 
-ONBUILD RUN bundle install
+# Set correct environment variables.
+ENV HOME /root
 
-COPY Server.rb /usr/src/app
-COPY makeDB.rb /usr/src/app
+# Enable nginx and Passenger
+RUN rm -f /etc/service/nginx/down
 
-COPY public /usr/src/app
+# Remove the default site
+RUN rm /etc/nginx/sites-enabled/default
+
+# Create virtual host
+ADD docker/vhost.conf /etc/nginx/sites-enabled/app.conf
 
 RUN mkdir -p /usr/src/app
 
+COPY Server.rb /usr/src/app
+COPY makeDB.rb /usr/src/app
+COPY public /usr/src/app
+COPY config.ru /usr/src/app
+
 WORKDIR /usr/src/app
+
+COPY Gemfile .
+
+COPY Gemfile.lock .
+
+RUN bundle install
+
+RUN chown -R app:app /usr/src/app
+
+# Clean up when done.
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ENV RACK_ENV production
 
-CMD ["ruby", "Server.rb"]
+# Use baseimage-docker's init process.
+CMD ["/sbin/my_init"]
