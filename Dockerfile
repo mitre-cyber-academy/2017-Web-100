@@ -12,11 +12,11 @@ RUN rm /etc/nginx/sites-enabled/default
 # Create virtual host
 ADD docker/vhost.conf /etc/nginx/sites-enabled/app.conf
 
-RUN mkdir -p /usr/src/app
+RUN mkdir -p /usr/src/app/public
 
 COPY Server.rb /usr/src/app
 COPY makeDB.rb /usr/src/app
-COPY public /usr/src/app
+COPY public /usr/src/app/public
 COPY config.ru /usr/src/app
 
 WORKDIR /usr/src/app
