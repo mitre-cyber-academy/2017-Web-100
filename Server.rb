@@ -61,7 +61,31 @@ post '/register' do
     @username = params[:usr]
     erb :login
   else
-    res = con.exec 'SELECT COUNT(username) FROM cameras where username=\'' + params[:usr].to_s + '\''
+    begin
+      res = con.exec 'SELECT COUNT(username) FROM cameras where username=\'' + params[:usr].to_s + '\''
+    rescue PGError
+      con = PG::Connection.connect_start(:dbname => 'db',
+                                         :user => 'default_user',
+                                         :host => 'db',
+                                         :password => 'default_user')
+
+      socket = con.socket_io
+      status = con.connect_poll
+      while status != PG::PGRES_POLLING_OK do
+        # do some work while waiting for the connection to complete
+        if status == PG::PGRES_POLLING_READING
+          if (not select([socket], [], [], 10.0))
+            raise "Asynchronous connection timed out!"
+          end
+        elsif(status == PG::PGRES_POLLING_WRITING)
+          if(not select([], [socket], [], 10.0))
+            raise "Asynchronous connection timed out!"
+          end
+        end
+        status = con.connect_poll
+      end
+      res = con.exec 'SELECT COUNT(username) FROM cameras where username=\'' + params[:usr].to_s + '\''
+    end
     @resp = res.values.to_s
     erb :wrongReg
   end
